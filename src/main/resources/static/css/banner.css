@@ -1,0 +1,103 @@
+@charset "UTF-8";
+
+.home {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+/* 배너 컨테이너 스타일 */
+.custom-top-banner-container {
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+/* 배너 아이템 스타일 */
+.custom-top-banner-item {
+    flex: 0 0 calc(33.3333% - 20px);
+    margin-right: 20px;
+    background-color: #242526; /* 배너 아이템 배경색 수정 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    text-decoration: none; /* 링크 밑줄 제거 */
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 추가 */
+}
+
+/* 배너 이미지 스타일 */
+.custom-top-banner-item img {
+    height: 90px; /* 이미지 높이 수정 */
+    width: auto;
+}
+
+/* 배너 텍스트 영역 스타일 */
+.custom-top-banner-text-area {
+    padding: 15px;
+    color: #ffffff; /* 텍스트 색상 수정 */
+    display: block;
+}
+
+/* 배너 제목 스타일 */
+.custom-top-banner-title {
+    font-weight: bold;
+    text-decoration: none; /* 제목 밑줄 제거 */
+}
+
+/* 배너 설명 스타일 */
+.custom-top-banner-description {
+    color: #ddd; /* 설명 텍스트 색상 수정 */
+}
+
+/* 배너 날짜 스타일 */
+.custom-top-banner-date {
+    color: #03c75a;
+}
+
+/* 밑줄 스타일 수정 */
+.custom-top-banner-item .custom-top-banner-text-area {
+    text-decoration: none; /* 밑줄 제거 */
+    font-weight: bold; /* 텍스트 굵게 스타일링 */
+    transition: color 0.3s; /* 색상 전환 효과 추가 */
+}
+
+/* 배너 아이템 호버 스타일 */
+.custom-top-banner-item:hover {
+    background-color: #293031; /* 호버 시 배경색 변경 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* 그림자 효과 추가 */
+}
+
+/* 날짜 텍스트 색상 수정 */
+.custom-top-banner-date {
+    color: #1EC800; /* 네이버 색상으로 수정 */
+}
+
+.custom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px; /* 위아래 좌우 여백 조정 */
+}
+
+/* 타이틀 스타일 */
+.custom-title {
+ color: #fff;
+ font-size: 19px
+}
+
+/* 링크 스타일 */
+.custom-link {
+  color: #c9cedc; /* 링크 색상 지정 */
+  font-size: 15px;
+  text-decoration: none; /* 링크에 밑줄 제거 */
+  font-weight: bold;
+
+}
+/* 반응형 CSS 추가 */
+@media (max-width: 767px) {
+    .custom-top-banner-item {
+        flex: 0 0 calc(100% - 20px);
+    }
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/signup.css">
+</head>
+
+<body>
+<div class="logo"><img style="height: 150px; width: 150px;" src="/images/beep-logo-white.png"></img></div><div class="fireworks"></div>
+<div class="container">
+    <form method="post" class="form">
+        <h2>Sign Up Form</h2>
+        <button type="button" id="checkUsernameButton" class="signupButton check" style="margin-left: 330px;">Check Username</button>
+        <div class="inputBox">
+            <input type="text" id="username" name="userName" placeholder="Username" required />
+        </div>
+        <div class="inputBox">
+            <input type="password" id="password" name="userPassword" placeholder="Password" required />
+        </div>
+        <div class="inputBox">
+            <input type="email" id="userEmail" name="userEmail" placeholder="Email" />
+        </div>
+        <div class="inputBox">
+            <input type="text" id="userNickname" name="userNickname" placeholder="Nickname" />
+        </div>
+        <div class="inputBox">
+            <input id="signupButton"  type="submit" value="Sign Up" />
+        </div>
+    </form>
+</div>
+
+<script th:replace="~{./layout/fragments :: bootstrap_js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/js/checkUsername.js"></script>
+</body>
+
+</html>

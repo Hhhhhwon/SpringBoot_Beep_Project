@@ -1,0 +1,7 @@
+@charset "UTF-8";
+
+/* 선택된 카테고리에 적용될 스타일 */
+.category-item.selected {
+    background-color: #f0f0f0; /* 배경색을 회색으로 변경 */
+    color: rgb(255, 0, 128); /* 선택된 카테고리의 글씨색 변경 */
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head th:replace="~{layout/fragments :: myhead}"></head>
+
+<style>
+input.inputStyle {
+    border: 2px solid transparent;
+}
+input.inputStyle::placeholder {
+    color: #7d8489; 
+}
+
+input.inputStyle:focus {
+    background-color: #242526; 
+    border-color: #8a2be2; 
+    color: #dfe2ea; 
+    outline: none; 
+}
+
+a.aStyle {
+    border: transparent;
+}
+</style>
+<body>
+<header th:replace="~{layout/fragments :: myheader}"></header>
+
+<nav th:replace="~{layout/fragments :: mysidebar}"></nav>
+<section class="home">
+<div class="container mt-5">
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: transparent;">
+    <div class="container">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item me-3">
+                <a class="nav-link btn btn-outline-secondary fs-5" style="border-bottom: 1px solid white;" th:href="@{/settings/profile}">프로필 편집</a>
+            </li>
+            <li class="nav-item me-3">
+                <a class="nav-link btn btn-outline-secondary fs-5" style="border-bottom: 5px double #8a2be2;" th:href="@{/settings/followers-list}">팔로워 목록</a>
+            </li>
+            <li class="nav-item me-3">
+                <a class="nav-link btn btn-outline-secondary fs-5" style="border-bottom: 1px solid white;" th:href="@{/settings/channelinfo}">방송 정보 편집</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+    <div class="text-white">
+        
+        <hr class="text-white">
+        
+        <div>
+            <div>
+            <span th:text="|내 채널 팔로워 수 / |"></span>
+            <span class="fw-bold fs-4" th:text="${followersCount}"></span>
+            <span th:text=" 명" class="fs-4"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-6">
+                <form class="input-group" method="get" th:action="@{/settings/followers-search(username=${userAccount.userNickname})}">
+                    <input id="followersKeyword" class="inputStyle form-control bg-dark text-white" name="keyword" placeholder="팔로워를 검색하세요." required/>
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary mx-2">검색</button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div>
+        <table class="table table-dark my-3" th:if="${followersList != null && followersList.totalElements > 0}">
+            <thead>
+                <tr>
+                    <th>닉네임</th>
+                    <th>팔로우 등록일</th>
+                    <th>기간</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="followersList, iterStat : ${followersList}" th:object="${followersList}">
+                    <td>
+                        <span th:text="*{followerUserAccountUserNickname}"></span>
+                    </td>
+                    <td th:text="*{#temporals.format(createdTime, 'YYYY년 MM월 dd일 HH:mm:ss')}"></td>
+                    <td th:text="${followersList.betweenCreatedTimeToNow == 0 ? '오늘' : followersList.betweenCreatedTimeToNow + '일 동안 팔로우'}"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <table class="table table-dark my-3" th:if="${followersCount eq 0}">
+            <thead>
+                <tr>
+                    <th>닉네임</th>
+                    <th>팔로우 등록일</th>
+                    <th>기간</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="3" class="text-secondary fw-bold">나를 팔로우 한 사람이 없어요...</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <table class="table table-dark my-3" th:if="${searchResult != null && searchResult.totalElements > 0}">
+            <thead>
+                <tr>
+                    <th>닉네임</th>
+                    <th>팔로우 등록일</th>
+                    <th>기간</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="searchResult, iterStat : ${searchResult}" th:object="${searchResult}">
+                    <td>
+                        <span th:text="*{followerUserAccountUserNickname}"></span>
+                    </td>
+                    <td th:text="*{#temporals.format(createdTime, 'YYYY년 MM월 dd일 HH:mm:ss')}"></td>
+                    <td th:text="${searchResult.betweenCreatedTimeToNow == 0 ? '오늘' : searchResult.betweenCreatedTimeToNow + '일 동안 팔로우'}"></td>
+                </tr>
+            </tbody>
+        </table>        
+        
+        <div th:if="${followersList != null && followersList.totalElements > 0}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"
+                    th:classappend="${!followersList.hasPrevious} ? 'disabled'">
+                    <a class="aStyle page-link bg-dark text-white"
+                        th:href="@{/settings/followers-list(keyword=${param.keyword}, p=${followersList.number - 1})}">&lt;</a>
+                </li>
+                <li class="page-item"
+                    th:each="pageNo : ${#numbers.sequence(0, followersList.totalPages - 1)}"
+                    th:if="${pageNo > followersList.number - 5 && pageNo <= followersList.number + 5}"
+                    th:classappend="${pageNo == followersList.number} ? 'active'">
+                    <a class="aStyle page-link"
+                        th:href="@{/settings/followers-list(keyword=${param.keyword}, p=${pageNo})}"
+                        th:text="${pageNo + 1}"></a>
+                </li>
+                <li class="page-item"
+                    th:classappend="${!followersList.hasNext} ? 'disabled'">
+                    <a class="aStyle page-link bg-dark text-white"
+                        th:href="@{/settings/followers-list(keyword=${param.keyword}, p=${followersList.number + 1})}">&gt;</a>
+                </li>
+            </ul>
+        </div>
+            
+        <div th:if="${searchResult != null && searchResult.totalElements > 0}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"
+                    th:classappend="${!searchResult.hasPrevious} ? 'disabled'">
+                    <a class="aStyle page-link bg-dark text-white"
+                        th:href="@{/settings/followers-search(keyword=${param.keyword}, p=${searchResult.number - 1})}">&lt;</a>
+                </li>
+                <li class="page-item"
+                    th:each="pageNo : ${#numbers.sequence(0, searchResult.totalPages - 1)}"
+                    th:if="${pageNo > searchResult.number - 5 && pageNo <= searchResult.number + 5}"
+                    th:classappend="${pageNo == searchResult.number} ? 'active'">
+                    <a class="aStyle page-link"
+                        th:href="@{/settings/followers-search(keyword=${param.keyword}, p=${pageNo})}"
+                        th:text="${pageNo + 1}"></a>
+                </li>
+                <li class="page-item"
+                    th:classappend="${!searchResult.hasNext} ? 'disabled'">
+                    <a class="aStyle page-link bg-dark text-white"
+                        th:href="@{/settings/followers-search(keyword=${param.keyword}, p=${searchResult.number + 1})}">&gt;</a>
+                </li>
+            </ul>
+        </div>
+            
+    </div>
+</div>
+
+
+<footer th:replace="layout/fragments :: myfooter"></footer>
+</section>
+
+<div th:replace="~{layout/fragments :: myModal}"></div>
+<script th:replace="~{layout/fragments :: bootstrap_js}"></script>
+<script th:replace="~{layout/fragments :: sidebar_js}"></script>
+<script src="/js/broadcast.js"></script>
+<script src="/js/fragments-categories-search.js"></script>
+</body>
+
+</html>

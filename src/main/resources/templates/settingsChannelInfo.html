@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head th:replace="~{layout/fragments :: myhead}"></head>
+
+<style>
+input.inputStyle {
+border: 2px solid transparent;
+}
+input.inputStyle:focus {
+    background-color: #242526; 
+    border-color: #8a2be2; 
+    color: #dfe2ea; 
+    outline: none; 
+}
+input.inputStyle::placeholder {
+    color: #7d8489; 
+}
+textarea.textareaStyle::placeholder {
+    color: #7d8489; 
+}
+textarea.textareaStyle {
+border: 2px solid transparent;
+resize: none;
+}
+textarea.textareaStyle:focus {
+background-color: #242526; 
+border-color: #8a2be2; 
+color: #dfe2ea; 
+outline: none; 
+}
+</style>
+
+<body>
+
+<header th:replace="~{layout/fragments :: myheader}"></header>
+
+<nav th:replace="~{layout/fragments :: mysidebar}"></nav>
+<section class="home">
+    <div class="container mt-5">
+    
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: transparent;">
+    <div class="container">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item me-3">
+                <a class="nav-link btn btn-outline-secondary fs-5" style="border-bottom: 1px solid white;" th:href="@{/settings/profile}">프로필 편집</a>
+            </li>
+            <li class="nav-item me-3">
+                <a class="nav-link btn btn-outline-secondary fs-5" style="border-bottom: 1px solid white;" th:href="@{/settings/followers-list}">팔로워 목록</a>
+            </li>
+            <li class="nav-item me-3">
+                <a class="nav-link btn btn-outline-secondary fs-5" style="border-bottom: 5px double #8a2be2;" th:href="@{/settings/channelinfo}">방송 정보 편집</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<hr class="text-white"/>
+
+        <div class="text-white row col-md-6">
+            <form th:action="@{/settings/channelinfo}" method="post">
+                <div class="my-2 mx-3">
+                    <div style="text-align: left">
+                        <span style="font-size: x-large;">
+                            제목                           
+                        </span>
+                    </div>
+                    <input class="inputStyle form-control bg-dark text-white" type="text" name="title" th:placeholder="${channel.channelTitle}" required/>
+                </div>
+                <div class="my-2 mx-3">
+                    <div style="text-align: left">
+                        <span style="font-size: x-large;">
+                            방송내용                           
+                        </span>
+                    </div>
+                    <textarea name="content" class="textareaStyle form-control bg-dark text-white" th:placeholder="${channel.channelContent}"></textarea>
+                </div>
+                <div class="my-2 mx-3">
+                    <div style="text-align: left">
+                        <span style="font-size: x-large;">
+                            카테고리                           
+                        </span>
+                    </div>
+                    <input type="text" class="inputStyle form-control bg-dark text-white" id="categoryInput2" th:value="${channel.categoryEntityOfChannel.categoryName}" placeholder="Just chatting">
+                    <div id="categoryList2" class="text-start"></div>
+                    <input type="hidden" name="categoryId" id="categoryId2" value=""> <!-- 숨겨진 입력 필드 -->
+                    <input type="text" name="channelId" class="d-none" th:value="${channel != null ? channel.channelId : ''}">  
+                </div>
+                    <div>
+                    <button class="btn btn-primary" type="submit">변경</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{layout/fragments :: myModal}"></div>
+<script th:replace="~{layout/fragments :: sidebar_js}"></script>
+<script th:replace="~{layout/fragments :: bootstrap_js}"></script>
+<script src="/js/broadcast.js"></script>
+<script src="/js/fragments-categories-search.js"></script>
+<script src="/js/fragments-categories-search2.js"></script>
+</body>
+</html>

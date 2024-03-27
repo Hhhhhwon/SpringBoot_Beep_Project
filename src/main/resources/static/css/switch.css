@@ -1,0 +1,90 @@
+@charset "UTF-8";
+
+.tmtm {
+    margin-bottom: 5px;
+}
+
+#switch1, #switch2, #switch3 {
+  position: absolute;
+  /* hidden */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.switch_label {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  background: #fff;
+  border: 2px solid #daa;
+  border-radius: 20px;
+  transition: 0.2s;
+}
+.switch_label:hover {
+  background: #efefef;
+}
+.onf_btn {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 20px;
+  background: #daa;
+  transition: 0.2s;
+}
+
+/* checking style */
+#switch1:checked+.switch_label {
+  background: #c44;
+  border: 2px solid #c44;
+}
+
+#switch1:checked+.switch_label:hover {
+  background: #e55;
+}
+
+/* move */
+#switch1:checked+.switch_label .onf_btn {
+  left: 29px;
+  background: #fff;
+  box-shadow: 1px 2px 3px #00000020;
+}
+
+/* checking style */
+#switch2:checked+.switch_label {
+  background: #c44;
+  border: 2px solid #c44;
+}
+
+#switch2:checked+.switch_label:hover {
+  background: #e55;
+}
+
+/* move */
+#switch2:checked+.switch_label .onf_btn {
+  left: 29px;
+  background: #fff;
+  box-shadow: 1px 2px 3px #00000020;
+}
+
+/* checking style */
+#switch3:checked+.switch_label {
+  background: #c44;
+  border: 2px solid #c44;
+}
+
+#switch3:checked+.switch_label:hover {
+  background: #e55;
+}
+
+/* move */
+#switch3:checked+.switch_label .onf_btn {
+  left: 29px;
+  background: #fff;
+  box-shadow: 1px 2px 3px #00000020;
+}

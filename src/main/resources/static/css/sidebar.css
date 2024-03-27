@@ -1,0 +1,370 @@
+@charset "UTF-8";
+
+@import
+	url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Source+Sans+3:ital,wght@1,600&display=swap')
+	;
+
+
+
+
+
+/* Sidebar Css */
+
+/* 전역 스타일 설정 */
+* {
+	font-family: 'Poppins', sans-serif; /* 전체 폰트 설정 */
+	margin: 0; /* 바깥쪽 여백 초기화 */
+	padding: 0; /* 안쪽 여백 초기화 */
+	box-sizing: border-box; /* border-box 모델 적용 */
+}
+
+/* 목록 스타일 초기화 */
+ul {
+    padding-left: 0 !important; /* 직접 스타일을 적용하고 !important를 사용하여 우선순위를 높임 */
+}
+
+/* 전역 변수 설정 */
+:root {
+	/* 색상 변수 설정 */
+	--body-color: #fff; /* 전체 배경 색상 */
+	--sidebar-color: #f7f7f8; /* 사이드바 배경 색상 */
+	--primary-color: #695CFE; /* 주요 색상 (예: 링크, 버튼 등) */
+	--primary-color-light: #F6F5FF; /* 주요 색상 (예: 링크, 버튼 등) */
+	--toggle-color: #DDD; /* 토글 버튼 등의 색상 */
+	--text-color: #707070; /* 텍스트 색상 */
+	/* 전환 효과 지속 시간 변수 설정 */
+	--tran-02: all 0.2s ease; /* 0.2초의 트랜지션 지속 시간 */
+	--tran-03: all 0.3s ease; /* 0.3초의 트랜지션 지속 시간 */
+	--tran-04: all 0.4s ease; /* 0.4초의 트랜지션 지속 시간 */
+	--tran-05: all 0.5s ease; /* 0.5초의 트랜지션 지속 시간 */
+}
+
+/* body 스타일 설정 */
+body {
+	height: 100vh; /* 뷰포트 높이 100% 설정 */
+	background: var(--body-color) !important; /* 배경 색상 변수 적용 */
+	transition: var(--tran-05); /* 전환 효과 적용 */
+}
+
+/* 다크 모드 스타일 설정 */
+body.dark {
+	--body-color: #18191A; /* 다크 모드 배경 색상 변수 적용 */
+	--sidebar-color: #242526; /* 다크 모드 사이드바 배경 색상 변수 적용 */
+	--primary-color: #3A3B3C; /* 다크 모드 주요 색상 변수 적용 */
+	--primary-color-light: #3A3B3C; /* 다크 모드 주요 색상 변수 적용 */
+	--toggle-color: #FFF; /* 다크 모드 토글 버튼 색상 변수 적용 */
+	--text-color: #CCC; /* 다크 모드 텍스트 색상 변수 적용 */
+}
+
+/* Sidebar 스타일 설정 */
+.sidebar {
+	position: fixed; /* 고정 위치로 설정 */
+	
+	top: 50px; /* 상단 여백 30px */
+	left: 0; /* 좌측 여백 0px */
+	height: 100%; /* 높이 100% */
+	width: 250px; /* 너비 250px */
+	padding: 10px 10px; /* 내부 여백 설정 */
+	background: var(--sidebar-color); /* 배경 색상 변수 적용 */
+	transition: var(--tran-05); /* 전환 효과 적용 */
+	z-index: 100;
+}
+
+/* 사이드바가 닫힌 상태의 스타일 설정 */
+.sidebar.close {
+	width: 78px; /* 너비 78px로 설정하여 사이드바를 닫은 상태로 만듦 */
+}
+
+/* ===== Resuable Css ===== */
+
+/* 사이드바 내 텍스트 스타일 */
+
+.sidebar .text {
+    font-size: 16px; /* 글자 크기 16px */
+    font-weight: 500; /* 글자 두께 500 (중간) */
+    color: var(--text-color); /* 글자 색상은 사용자 지정 변수 --text-color에 따라 동적으로 설정됨 */
+    transition: var(--tran-04); /* 변화에 대한 부드러운 전환 효과를 적용하는 데 사용되는 트랜지션 속성 */
+    white-space: nowrap; /* 줄 바꿈을 허용하지 않고 텍스트를 한 줄에 표시함 */
+    opacity: 1; /* 투명도를 1로 설정하여 요소를 완전히 불투명하게 함 */
+}
+
+/* 사이드바가 닫혔을 때 텍스트 투명도 조절 */
+.sidebar.close .text {
+    opacity: 0; /* 사이드바가 닫힌 상태에서 텍스트를 완전히 투명하게 함 */
+}
+
+/* 사이드바 내 이미지 스타일 */
+
+.sidebar .image {
+    min-width: 60px; /* 최소 너비 60px */
+    display: flex; /* 플렉스 컨테이너로 설정하여 내부 요소들을 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: center;
+}
+
+/* 사이드바 리스트 아이템 스타일 */
+
+.sidebar li {
+    height: 50px; /* 높이 50px */
+    margin-top: 10px; /* 위쪽 여백 10px */
+    list-style: none; /* 리스트 마커 제거 */
+    display: flex; /* 플렉스 컨테이너로 설정하여 내부 요소들을 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+}
+
+/* 사이드바 아이콘 스타일 */
+
+.sidebar li .icon {
+    color: #9147ff; /* 아이콘 색상 */
+    display: flex; /* 플렉스 컨테이너로 설정하여 내부 요소들을 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    min-width: 60px; /* 최소 너비 60px */
+    font-size: 20px; /* 아이콘 글자 크기 20px */
+}
+
+/* 사이드바 헤더 스타일 */
+
+.sidebar header {
+    position: relative; /* 상대 위치로 설정하여 자식 요소들을 배치 */
+}
+
+/* 사이드바 내 이미지 텍스트 스타일 */
+
+.sidebar .image-text img {
+    width: 40px; /* 이미지 너비 40px */
+    border-radius: 6px; /* 이미지 테두리 반경 6px */
+}
+
+.sidebar header .image-text {
+    display: flex; /* 플렉스 컨테이너로 설정하여 내부 요소들을 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+}
+
+/* 사이드바 헤더 텍스트 스타일 */
+
+header .image-text .header-text {
+    display: flex; /* 플렉스 컨테이너로 설정하여 내부 요소들을 정렬 */
+    flex-direction: column; /* 세로 방향으로 컬럼 정렬 */
+}
+
+.header-text .name {
+    font-weight: 600; /* 이름 텍스트 두께 600 (굵게) */
+}
+
+.header-text .profession {
+    margin-top: -2px; /* 직업 텍스트 상단 여백 -2px */
+}
+
+
+/* ===== 토글 버튼 디자인 ===== */
+
+/* 사이드바 헤더 내의 토글 버튼 스타일링 */
+
+.sidebar header .toggle {
+    position: absolute; /* 가장 가까운 상위 위치 요소를 기준으로 배치 */
+    top: 50%; /* 부모 요소의 상단에서 50% 위치에 배치 */
+    right: -25px; /* 부모 요소의 오른쪽으로 25px 이동 */
+    transform: translateY(-50%) rotate(180deg); /* 닫힌 상태에서 아이콘을 180도 회전 */
+    height: 25px; /* 높이 25px */
+    width: 25px; /* 너비 25px */
+    display: flex; /* 플렉스 컨테이너로 설정하여 자식 요소들을 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    border-radius: 50%; /* 원형 모양의 버튼을 위한 테두리 반경 설정 */
+    color: var(--sidebar-color); /* 글자 색상 설정 */
+    font-size: 22px; /* 글자 크기 22px */
+    background: var(--primary-color); /* 배경색 설정 */
+    transition: var(--tran-03);
+}
+
+/* 사이드바가 닫혔을 때 토글 버튼 모양 변화 */
+.sidebar.close header .toggle {
+    transform: translateY(-50%); /* 세로 중앙 정렬을 위해 Y축으로 -50% 이동 */
+}
+
+/* 다크 모드에서 토글 버튼 색상 및 모양 변화 */
+body.dark .sidebar header .toggle {
+    color: var(--text-color); /* 다크 모드에서 글자 색상 변경 */
+}
+.sidebar .menu{
+	/* 메뉴줄이면  margin-top 주시면 됩니다  */
+	
+}
+
+/* 사이드바 내 검색 상자에 대한 배경 및 트랜지션 스타일 설정 */
+.sidebar .search-box {
+	background: var(--primary-color-light); /* 배경 색상 변수를 적용하여 검색 상자의 배경 색상 설정 */
+	border-radius: 6px; /* 테두리의 꼭지점을 둥글게 만들기 위해 사용되는 속성 */
+	transition: var(--tran-05); /* 변화에 대한 부드러운 전환 효과를 적용하는 데 사용되는 트랜지션 속성 */
+}
+
+/* 검색 상자 스타일 설정 */
+.search-box input {
+	height: 100%; /* 높이 100% */
+	width: 100%; /* 너비 100% */
+	outline: none; /* 외곽선 제거 */
+	border: none; /* 테두리 제거 */
+	border-radius: 6px; /* 테두리 반경 6px */
+	font-size: 16px;
+	font-weight: 500;
+	background: var(--primary-color-light); /* 배경 색상 변수 적용 */
+}
+
+/* Sidebar 메뉴 항목 a 링크 스타일 설정 */
+.sidebar li a {
+	height: 100%; /* 높이 100% */
+	width: 100%; /* 너비 100% */
+	display: flex; /* 플렉스 컨테이너로 설정하여 자식 요소들을 행으로 배치 */
+	align-items: center; /* 수직 정렬을 중앙으로 설정 */
+	text-decoration: none; /* 텍스트에 대한 장식을 제거 */
+	border-radius: 6px; /* 테두리 반경 6px */
+	transition: var(--tran-04); /* 전환 효과 적용 */
+	display: flex; /* 플렉스 컨테이너로 설정하여 자식 요소들을 행으로 배치 */
+}
+
+/* Sidebar 메뉴 항목 a 링크에 마우스 호버 시 스타일 설정 */
+.sidebar li a:hover {
+	background: var(--primary-color); /* 배경 색상 변수 적용 */
+}
+
+/* Sidebar 메뉴 항목 a 링크에 마우스 호버 시 아이콘 및 텍스트 스타일 설정 */
+.sidebar li a:hover .icon
+.sidebar li a:hover .text {
+	color: var(--sidebar-color); /* 텍스트 색상 변수 적용 */
+}
+
+/* 다크 모드에서 Sidebar 메뉴 항목 a 링크에 마우스 호버 시 아이콘 및 텍스트 스타일 설정 */
+body.sidebar li a:hover .icon
+body.sidebar li a:hover .text {
+	color: var(--text-color); /* 텍스트 색상 변수 적용 */
+}
+
+/* 메뉴 바 스타일 설정 */
+.sidebar .menu-bar {
+	height: calc(100% - 100px); /* 높이를 (100% - 100px)로 설정하여 메뉴 바의 크기 조절 */
+	display: flex; /* 플렉스 컨테이너로 설정하여 자식 요소들을 행으로 배치 */
+	flex-direction: column; /* 플렉스 컨테이너의 방향을 열로 설정 */
+	justify-content: space-between; /* 메뉴 바의 내용을 상단 및 하단으로 배치하여 여백 생성 */
+	overflow-y: hidden; /* 수직 스크롤바 활성화 */
+    overflow-x: hidden; /* 수평 스크롤바 숨김 */ 
+}
+
+.sidebar .menu-bar {
+    overflow-y: auto; /* 스크롤 활성화 */
+
+ 
+}
+/* Chrome, Safari, Edge 스크롤바 숨기기 */
+::-webkit-scrollbar {
+  display: none;
+}
+.sidebar .menu-bar::-webkit-scrollbar {
+    width: 0; /* 수직 스크롤바 너비를 0으로 설정하여 숨김 */
+    height: 0; /* 수평 스크롤바 높이를 0으로 설정하여 숨김 */
+}
+
+/* 다크 모드 전환 버튼 스타일 설정 */
+.menu-bar .mode {
+	position: relative; /* 요소를 기본 문서 흐름에 따라 배치하고, 상대 위치 속성을 기준으로 위치를 조정함 */
+	border-radius: 6px; /* 테두리 반경 6px */
+	background: var(--primary-color-light); /* 배경 색상 변수 적용 */
+}
+
+/* 다크 모드 아이콘 및 토글 스위치 스타일 설정 */
+.menu-bar .mode .moon-sun {
+	height: 50px; /* 높이 50px로 설정 */
+	width: 60px; /* 너비 60px로 설정 */
+	display: flex; /* 플렉스 컨테이너로 설정하여 자식 요소들을 행으로 배치 */
+	align-items: center; /* 수직 정렬을 중앙으로 설정 */
+}
+
+/* 모드 아이콘에 대한 절대 위치와 전환 효과 설정 */
+.menu-bar .mode i {
+	position: absolute; /* 절대 위치 속성을 사용하여 모드 아이콘의 위치를 설정 */
+	transition: var(--tran-03); /* 변화에 대한 부드러운 전환 효과를 적용하는 데 사용되는 트랜지션 속성 */
+}
+
+/* 다크 모드에서 태양 아이콘의 투명도를 0으로 설정하여 숨김 */
+.menu-bar .mode i.sun {
+	opacity: 0;
+}
+
+/* 다크 모드에서 태양 아이콘을 표시하고 달 아이콘을 숨김 */
+body.dark .menu-bar .mode i.sun {
+	opacity: 1; /* 태양 아이콘을 완전히 표시함 */
+}
+
+body.dark .menu-bar .mode i.moon {
+	opacity: 0; /* 달 아이콘을 완전히 숨김 */
+}
+
+.menu-bar .mode .toggle-switch {
+	position: absolute; /* 부모 요소를 기준으로 배치 */
+	right: 0px; /* 요소를 오른쪽으로 이동시킴 */
+	display: flex; /* 플렉스 컨테이너로 설정 */
+	align-items: center; /* 수직 방향 가운데 정렬 */
+	height: 100%; /* 높이를 100%로 설정 */
+	min-width: 60px; /* 최소 너비를 60px로 설정 */
+	cursor: pointer; /* 마우스 커서를 가리키는 요소 위로 변경 */
+	justify-content: space-evenly; /* 자식 요소들을 여백을 동일하게 분배하여 수평 가운데 정렬 */
+	border-radius: 6px;
+	background-color: var(--primary-color-light); /* 배경 색상 변수를 적용하여 요소의 배경 색상 설정 */
+	
+}
+
+/* 토글 스위치 스타일 설정 */
+.toggle-switch .switch {
+	position: relative; /* 요소를 기본 문서 흐름에 따라 배치하고, 상대 위치 속성을 기준으로 위치를 조정함 */
+	height: 22px; /* 높이 22px로 설정 */
+	width: 44px; /* 너비 44px로 설정 */
+	border-radius: 25px; /* 테두리 반경 25px로 설정 */
+	background: var(--toggle-color); /* 배경 색상 변수 적용 */
+}
+
+/* 토글 스위치 내부의 원형 스타일 설정 */
+.switch::before {
+	content: ''; /* 가상 요소를 생성 */
+	position: absolute; /* 가상 요소를 부모 요소를 기준으로 배치 */
+	height: 15px; /* 높이 15px로 설정 */
+	width: 15px; /* 너비 15px로 설정 */
+	border-radius: 50%; /* 테두리 반경 50%로 설정하여 원형으로 생성 */
+	top: 50%; /* 상단 여백을 50%로 설정 */
+	left: 5px; /* 좌측 여백을 5px로 설정 */
+	transform : translateY( -50%); /* 수직으로 50%만큼 이동하여 중앙 정렬 */
+	background: var(--sidebar-color); /* 배경 색상 변수 적용 */
+	transition: var(--tran-03); /* 전환 효과 적용 */
+	transform: translateY(-50%); /* 수직으로 50%만큼 이동하여 중앙 정렬 */
+}
+
+/* 다크 모드일 때 토글 스위치 내부의 원형 스타일 설정 */
+body.dark .switch::before {
+	left: 24px; /* 좌측 여백을 24px로 설정 */
+}
+/* 홈 섹션 */
+.home {
+    position: relative; /* 상대 위치 설정 */
+    left: 250px; /* 왼쪽 여백 설정 */
+    height: 100vh; /* 화면 세로 길이로 설정 */
+    width: calc(100% - 250px); /* 전체 너비에서 사이드바 너비 뺀 값으로 설정 */
+    background: var(--body-color); /* 사용자 지정 변수 --body-color에 따라 동적으로 배경색 설정 */
+    transition: var(--tran-05); /* 부드러운 전환 효과를 적용하는 데 사용되는 트랜지션 속성 */
+}
+
+/* 홈 섹션 텍스트 */
+.home .text {
+    font-size: 30px; /* 글자 크기 30px */
+    font-weight: 500; /* 글자 두께 500 (중간) */
+    color: var(--text-color); /* 사용자 지정 변수 --text-color에 따라 동적으로 글자 색상 설정 */
+    padding: 8px 40px; /* 위아래 8px, 좌우 40px의 안쪽 여백 설정 */
+}
+
+/* 사이드바가 닫혀있을 때 홈 섹션 위치 조정 */
+.sidebar.close ~ .home  {
+    left: 78px; /* 왼쪽 여백을 78px으로 설정하여 사이드바를 닫았을 때의 위치 조정 */
+    width: calc(100% - 78px); /* 전체 너비에서 사이드바를 뺀 값으로 설정하여 사이드바를 닫았을 때의 너비 조정 */
+}
+.sidebar.close ~ .home .video-container video {
+	width: 1500px;
+	 left: 78px; /* 왼쪽 여백을 78px으로 설정하여 사이드바를 닫았을 때의 위치 조정 */
+}

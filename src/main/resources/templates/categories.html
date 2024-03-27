@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head th:replace="layout/fragments :: myhead"></head>
+
+<style>
+input.inputStyle {
+    border: 2px solid transparent;
+}
+
+input.inputStyle::placeholder {
+    color: #7d8489; 
+}
+
+input.inputStyle:focus {
+    background-color: #242526; 
+    border-color: #8a2be2; 
+    color: #dfe2ea; 
+    outline: none; 
+}
+
+div.divCategoryStyle {
+    border: transparent;
+}
+
+.categoryCard:hover {
+        box-shadow: -5px 5px 10px rgba(138, 43, 226, 0.5); /* 왼쪽에 보라색 그림자 추가 */
+        transform: translate(1px, -1px);
+        transform: scale(1.01);
+        transition: box-shadow 0.3s ease; /* 애니메이션 효과 */
+    }
+
+</style>
+
+<body>
+
+<header th:replace="layout/fragments :: myheader"></header>
+<nav th:replace="layout/fragments :: mysidebar"></nav>
+
+<section class="home">
+
+<div class="container mt-5">
+    <div>
+    <h1 class="fw-bold text-start text-white">탐색</h1>
+    </div>
+
+    <!-- 카테고리 탭 -->
+    <ul class="nav nav-tabs my-3" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="mostViewers-tab" data-bs-toggle="tab" href="#mostViewers" role="tab" aria-controls="mostViewers" aria-selected="true">시청 순</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="popular-tab" data-bs-toggle="tab" href="#popular" role="tab" aria-controls="popular" aria-selected="false">추천 순</a>
+        </li>
+    </ul>
+
+    <!-- 검색 입력 폼과 검색 결과 표시 컨테이너 -->
+    <div class="row justify-content-end mb-5">
+        <div class="col-4">
+            <div class="input-group">
+                <input type="text" id="searchKeyword" class="inputStyle form-control bg-dark text-white" placeholder="카테고리를 검색하세요."/>
+                <button th:onclick="searchKeyword()" class="btn btn-secondary text-white mx-2">검색</button>
+            </div>
+        </div>
+    </div>
+    <div id="searchResults" class="row"></div>
+
+    <!-- 카테고리 탭 내용 -->
+    <div class="tab-content">
+    
+        <div class="tab-pane fade show active" id="mostViewers" role="tabpanel">
+            <div class="row">
+                <div th:each="mostViewers, iterStat : ${mostViewers}" class="col-lg-2 col-md-4 mb-4">
+                    <div class="divCategoryStyle card categoryCard">
+                        <a th:href="@{/categories/{categoryId}(categoryId=${mostViewers.categoryId})}" class="card-link text-decoration-none text-white">
+                            <img th:src="${mostViewers.categoryImageUrl}" class="card-img-top img-fluid" alt="Category Image" style="width: 200px; height: 250px;">
+                            <div class="card-body bg-dark">
+                                <h5 class="text-left text-white text-truncate fs-5" th:text="${mostViewers.categoryName}">Category Name</h5>
+                                <h5 class="text-left text-white text-truncate fs-6" th:text="${mostViewers.categoryTotalView != null ? '시청자 ' + mostViewers.categoryTotalView + '명' : '시청자 0명'}"></h5>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="popular" role="tabpanel">
+            <div class="row">
+                <div th:each="populars, iterStat : ${populars}" class="col-lg-2 col-md-4 mb-4">
+                    <div class="divCategoryStyle card categoryCard">
+                        <a th:href="@{/categories/{categoryId}(categoryId=${populars.categoryId})}" class="card-link text-decoration-none text-white">
+                            <img th:src="${populars.categoryImageUrl}" class="card-img-top img-fluid" alt="Category Image" style="width: 200px; height: 250px;">
+                            <div class="card-body bg-dark">
+                                <h5 class="text-left text-white text-truncate fs-5" th:text="${populars.categoryName}">Category Name</h5>
+                                <h5 class="text-left text-white text-truncate fs-6" th:text="${populars.categoryTotalView != null ? '시청자 ' + populars.categoryTotalView + '명' : '시청자 0명'}"></h5>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+</div>
+<footer th:replace="layout/fragments :: myfooter"></footer>
+</section>
+
+<!-- 방송하기/방송종료 -->
+<div th:replace="layout/fragments :: myModal"></div>
+<script src="/js/broadcast.js"></script>
+
+<script th:replace="~{layout/fragments :: bootstrap_js}"></script>
+<script th:replace="~{layout/fragments :: sidebar_js}"></script>
+<script src="/js/categories-search.js"></script>
+
+</body>
+</html>

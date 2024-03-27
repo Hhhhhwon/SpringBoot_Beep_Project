@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head th:replace="~{layout/fragments :: myhead}"></head>
+<style>
+    #notification-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color:rgba(100, 100, 100);
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+      position: fixed;
+      overflow: auto;   
+    }
+    .notification {
+        z-index: 10000;
+    }
+    #notification-container.active {
+      opacity: 1;
+    }
+</style>
+<body>
+
+<header th:replace="~{layout/fragments :: myheader}"></header>
+
+<nav th:replace="~{layout/fragments :: mysidebar}"></nav>
+
+<section th:replace="~{layout/fragments :: myhome}"></section>
+
+<div th:replace="~{layout/fragments :: myModal}"></div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast fade hide" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="30000">
+        <div class="toast-header">
+            <img src="..." class="rounded me-2 notiImg" alt="..." style="max-width: 20px; max-height: 20px;">
+            <strong class="me-auto"></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    <div class="toast-body">
+        
+    </div>
+  </div>
+</div>
+
+<script th:replace="~{layout/fragments :: sidebar_js}"></script>
+<script th:replace="~{layout/fragments :: bootstrap_js}"></script>
+<script src="/js/broadcast.js"></script>
+<script src="/js/fragments-categories-search.js"></script>
+<script src="/js/sse.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head th:replace="~{layout/fragments :: myhead}"></head>
+
+<style>
+input.inputStyle {
+    border: 2px solid transparent;
+}
+textarea.textareaStyle {
+    border: 2px solid transparent;
+    resize: none;
+}
+div.divStyle {
+    border: 2px solid transparent;
+}
+
+input.inputStyle:focus {
+    background-color: #242526; 
+    border-color: #8a2be2; 
+    color: #dfe2ea; 
+    outline: none; 
+}
+
+textarea.textareaStyle:focus {
+    background-color: #242526; 
+    border-color: #8a2be2; 
+    color: #dfe2ea; 
+    outline: none; 
+}
+</style>
+<body>
+
+<header th:replace="layout/fragments :: myheader"></header>
+<nav th:replace="layout/fragments :: mysidebar"></nav>
+
+<section class="home">
+
+<div class="container mt-5 text-white">
+    
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: transparent;">
+    <div class="container">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item me-3">
+                <a class="nav-link btn btn-outline-secondary fs-5" style="border-bottom: 5px double #8a2be2;" th:href="@{/settings/profile}">프로필 편집</a>
+            </li>
+            <li class="nav-item me-3">
+                <a class="nav-link btn btn-outline-secondary fs-5" style="border-bottom: 1px solid white;" th:href="@{/settings/followers-list}">팔로워 목록</a>
+            </li>
+            <li class="nav-item me-3">
+                <a class="nav-link btn btn-outline-secondary fs-5" style="border-bottom: 1px solid white;" th:href="@{/settings/channelinfo}">방송 정보 편집</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<hr class="text-white"/>
+    
+    <div class="row justify-content-center">
+        
+        <div class="col-md-6 my-3">
+            <h5 class="fw-bold">채널 이미지 변경</h5>
+            <div id="imageContainer" class="my-3 d-flex justify-content-center position-relative">
+                <div class="position-relative">
+                    <img class="img-thumbnail rounded-circle" id="channelImage" th:src="${channel.channelProfileImg}" style="width:200px; height:200px; display: block;" />
+                    <label id="channelProfileImgLabel" for="channelProfileImg" class="btn btn-secondary btn-sm position-absolute" style="bottom: 10px; right: 10px;">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                <img id="uploadedImage" style="width: 200px; height: 200px; display: none;" class="img-thumbnail rounded-circle"/>
+                <label id="removePreviewButtonLabel" for="removePreviewButton" style="bottom: 10px; right: 10px; display: none;" class="btn btn-danger btn-sm position-absolute"><i class="fas fa-camera"></i></label>
+                <input class="d-none" type="button" id="removePreviewButton"/>
+                </div>
+            </div>
+        
+            <form id="uploadForm" action="/settings/channelupdate" method="post" enctype="multipart/form-data" class="text-white">
+                <input id="channelId" name="channelId" th:value="${channel.channelId}" class="d-none"/>
+                <div class="mb-3">
+                    <label for="channelProfileImg" class="form-label my-3 visually-hidden">프로필 이미지 업로드</label>
+                    <input type="file" id="channelProfileImg" name="imgFile" accept=".jpg, .png" class="form-control d-none" required/>
+                </div>
+                <button type="submit" class="btn btn-primary">변경</button>
+            </form>
+        </div>
+
+        <div class="col-md-6 my-3">
+            <form action="/settings/profile" method="post" class="text-white">
+                <input type="hidden" name="username" th:value="${userAccount.userName}"/>
+
+                <div class="card-body mb-3">
+                    <label for="nickname" class="form-label">닉네임</label>
+                    <input type="text" id="nickname" name="nickname" class="inputStyle form-control bg-dark text-white" th:value="${userAccount.userNickname}" required maxlength="30"/>
+                </div>
+
+                <div class="card-body mb-3">
+                    <label for="selfIntroduction" class="form-label">자기 소개</label>
+                    <textarea id="selfIntroduction" name="selfIntroduction" class="textareaStyle form-control bg-dark text-white" rows="3" th:text="${userAccount.userSelfIntroduction}" required maxlength="60"></textarea>
+                </div>
+                
+                <div class="card-body mb-3">
+                    <label for="userStreamingKey">스트림 키</label>
+                    <div id="userStreamingKey" class="divStyle form-control bg-dark text-white" th:text="${userAccount.userStreamingKey}"></div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">변경</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<footer th:replace="layout/fragments :: myfooter"></footer>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const imgFileInput = document.querySelector('#channelProfileImg');
+    const imagePreview = document.querySelector('#uploadedImage');
+    const removePreviewButton = document.querySelector('#removePreviewButton');
+    const channelImage = document.querySelector('#channelImage');
+
+    imgFileInput.addEventListener('change', previewImage);
+
+    function previewImage() {
+        const file = imgFileInput.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function() {
+                imagePreview.src = reader.result;
+                imagePreview.style.display = 'block';
+                removePreviewButton.style.display = 'block';
+                channelImage.style.display = 'none';
+                channelProfileImgLabel.style.display = 'none';
+                removePreviewButtonLabel.style.display = 'block';
+            }
+
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+            removePreviewButton.style.display = 'none';
+            channelImage.style.display = 'block';
+            channelProfileImgLabel.style.display = 'block';
+            removePreviewButtonLabel.style.display = 'none';
+        }
+    }
+
+    removePreviewButton.addEventListener('click', removePreview);
+
+    function removePreview() {
+        imgFileInput.value = '';
+        imagePreview.src = '';
+        imagePreview.style.display = 'none';
+        removePreviewButton.style.display = 'none';
+        channelImage.style.display = 'block';
+        channelProfileImgLabel.style.display = 'block';
+        removePreviewButtonLabel.style.display = 'none';        
+    }
+
+});
+</script>
+<!-- 방송하기/방송종료 -->
+<div th:replace="layout/fragments :: myModal"></div>
+<script src="/js/broadcast.js"></script>
+
+<script th:replace="~{layout/fragments :: bootstrap_js}"></script>
+<script th:replace="~{layout/fragments :: sidebar_js}"></script>
+<script src="/js/categories-search.js"></script>
+
+</body>
+</html>

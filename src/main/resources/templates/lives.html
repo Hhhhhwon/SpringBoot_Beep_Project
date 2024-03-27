@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head th:replace="~{layout/fragments :: myhead}"></head>
+
+<body>
+
+<header th:replace="~{layout/fragments :: myheader}"></header>
+<nav th:replace="~{layout/fragments :: mysidebar}"></nav>
+
+<section class="home">
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="fw-bold text-white text-start mb-0">전체 라이브</h1>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    시청순
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item active" id="viewerBtn" data-bs-toggle="tab" href="#viewerList" role="tab" aria-controls="viewerList" aria-selected="true">시청순</a></li>
+                    <li><a class="dropdown-item" id="recommendedBtn" data-bs-toggle="tab" href="#recommendedList" role="tab" aria-controls="recommendedList" aria-selected="false">추천순</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="text-white"/> 
+
+    <div id="viewerList" class="row row-cols-1 row-cols-md-4 g-4 mt-3 custom">
+        <!-- Thymeleaf의 반복문을 사용하여 동적으로 동영상 카드를 생성 -->
+        <div th:each="broadcast : ${channelList}" th:object="${broadcast}" class="col">
+            <!-- 더미 데이터를 사용하여 동영상 정보 표시 -->
+            <div class="card border-dark">
+                <a class="video-card-thumbnail position-relative" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                    <img src="https://livecloud-thumb.akamaized.net/chzzk/livecloud/KR/stream/26760407/live/4249524/record/24711646/thumbnail/image_1080.jpg" class="card-img-top rounded-3" alt="Video Thumbnail">
+                    <div class="live-badge-container position-absolute top-0 start-0 mt-3 ms-3">
+                        <span class="badge bg-danger">LIVE</span>
+                        <span class="badge bg-secondary ms-1" th:text="*{channelViewerCount + ' 명'}"></span>
+                    </div>
+                </a>
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div class="video-card-profile mb-2">
+                        <a class="video-card-image" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                            <img th:src="*{channelProfileImg}" alt="Streamer Image" class="rounded-circle" style="width: 40px; height: 40px;">
+                        </a>
+                    </div>
+                    <div class="video-card-area mb-2">
+                        <a class="video-card-title text-decoration-none" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                            <span class="video-title" style="text-decoration: none; color: black; font-weight: bold;" th:text="*{channelTitle}"></span>
+                        </a>
+                        <div class="video-card-name">
+                            <a class="video-card-channel text-decoration-none" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                            <span class="name-ellipsis">
+                                <span class="name-text" style="text-decoration: none; color: black; font-weight: bold;" th:text="*{channelUserAccountEntity.userNickname}"></span>
+                            </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="video-card-information mt-2" th:if="*{categoryEntityOfChannel != null}">
+                        <a class="video-card-item text-decoration-none" th:href="@{/categories/{categoryId}(categoryId=*{categoryEntityOfChannel.categoryId})}">
+                            <span class="badge bg-secondary" th:text="*{categoryEntityOfChannel.categoryName}"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+        <div id="recommendedList" class="row row-cols-1 row-cols-md-4 g-4 mt-3 custom d-none">
+        <!-- Thymeleaf의 반복문을 사용하여 동적으로 동영상 카드를 생성 -->
+        <div th:each="recomendedBroadcast : ${recommendedChannelList}" th:object="${recomendedBroadcast}" class="col">
+            <!-- 더미 데이터를 사용하여 동영상 정보 표시 -->
+            <div class="card border-dark">
+                <a class="video-card-thumbnail position-relative" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                    <img src="https://livecloud-thumb.akamaized.net/chzzk/livecloud/KR/stream/26760407/live/4249524/record/24711646/thumbnail/image_1080.jpg" class="card-img-top rounded-3" alt="Video Thumbnail">
+                    <div class="live-badge-container position-absolute top-0 start-0 mt-3 ms-3">
+                        <span class="badge bg-danger">LIVE</span>
+                        <span class="badge bg-secondary ms-1" th:text="*{channelViewerCount + ' 명'}"></span>
+                    </div>
+                </a>
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div class="video-card-profile mb-2">
+                        <a class="video-card-image" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                            <img th:src="*{channelProfileImg}" alt="Streamer Image" class="rounded-circle" style="width: 40px; height: 40px;">
+                        </a>
+                    </div>
+                    <div class="video-card-area mb-2">
+                        <a class="video-card-title text-decoration-none" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                            <span class="video-title" style="text-decoration: none; color: black; font-weight: bold;" th:text="*{channelTitle}"></span>
+                        </a>
+                        <div class="video-card-name">
+                            <a class="video-card-channel text-decoration-none" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                            <span class="name-ellipsis">
+                                <span class="name-text" style="text-decoration: none; color: black; font-weight: bold;" th:text="*{channelUserAccountEntity.userNickname}"></span>
+                            </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="video-card-information mt-2" th:if="*{categoryEntityOfChannel != null}">
+                        <a class="video-card-item text-decoration-none" th:href="@{/categories/{categoryId}(categoryId=*{categoryEntityOfChannel.categoryId})}">
+                            <span class="badge bg-secondary" th:text="*{categoryEntityOfChannel.categoryName}"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer th:replace="layout/fragments :: myfooter"></footer>
+</section>
+
+<div th:replace="~{layout/fragments :: myModal}"></div>
+
+<script>
+    // 시청순 버튼
+    const viewerBtn = document.getElementById("viewerBtn");
+    // 추천순 버튼
+    const recommendedBtn = document.getElementById("recommendedBtn");
+    // 시청순 리스트
+    const viewerList = document.getElementById("viewerList");
+    // 추천순 리스트
+    const recommendedList = document.getElementById("recommendedList");
+    // 드롭다운 버튼
+    const dropdownButton = document.getElementById("dropdownMenuButton");
+
+    // 페이지 로드 시 초기화 함수 호출
+    window.onload = function() {
+        // 시청순 버튼 활성화
+        viewerBtn.classList.add("active");
+        // 추천순 리스트 숨김
+        recommendedList.classList.add("d-none");
+        // 초기 드롭다운 버튼 텍스트 설정
+        dropdownButton.innerText = viewerBtn.innerText;
+    };
+
+    // 시청순 버튼 클릭 시
+    viewerBtn.addEventListener("click", function() {
+        // 시청순 버튼 활성화
+        viewerBtn.classList.add("active");
+        recommendedBtn.classList.remove("active");
+        // 시청순 리스트 표시
+        viewerList.classList.remove("d-none");
+        recommendedList.classList.add("d-none");
+        // 드롭다운 버튼 텍스트 변경
+        dropdownButton.innerText = viewerBtn.innerText;
+    });
+
+    // 추천순 버튼 클릭 시
+    recommendedBtn.addEventListener("click", function() {
+        // 추천순 버튼 활성화
+        recommendedBtn.classList.add("active");
+        viewerBtn.classList.remove("active");
+        // 추천순 리스트 표시
+        recommendedList.classList.remove("d-none");
+        viewerList.classList.add("d-none");
+        // 드롭다운 버튼 텍스트 변경
+        dropdownButton.innerText = recommendedBtn.innerText;
+    });
+</script>
+
+<script th:replace="~{layout/fragments :: sidebar_js}"></script>
+<script th:replace="~{layout/fragments :: bootstrap_js}"></script>
+<script src="/js/broadcast.js"></script>
+<script src="/js/fragments-categories-search.js"></script>
+<script src="/js/sse.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,233 @@
+@charset "UTF-8";
+
+ body {
+    margin: 0; /* 바깥 여백을 0으로 설정 */
+    padding: 0; /* 안쪽 여백을 0으로 설정 */
+    display: flex; /* 플렉스 박스로 설정하여 내부 요소를 수평으로 정렬 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    min-height: 100vh; /* 최소 높이를 화면 높이의 100%로 설정 */
+    background: #000; /* 배경 색상을 검은색(#000)으로 설정 */
+    font-family: consolas; /* 글꼴을 Consolas로 설정 */
+    overflow: hidden; /* 넘치는 콘텐츠를 가림 */
+    position: relative; /* 상대적인 위치 설정 */
+}
+
+/* 불꽃놀이 애니메이션 */
+.fireworks {
+    position: absolute; /* 부모 요소를 기준으로 절대적인 위치 설정 */
+    width: 100%; /* 너비를 부모 요소의 100%로 설정 */
+    height: 100%; /* 높이를 부모 요소의 100%로 설정 */
+    background: url('/bg/bg.jpg'); /* 배경 이미지 설정 */
+    z-index: 0; /* z-index 속성을 사용하여 요소의 쌓임 순서를 조절 */
+    opacity: 0.5; /* 어두운 배경 */
+    animation: animateFireworks 10s linear infinite; /* 불꽃놀이 애니메이션 적용 */
+}
+
+@keyframes animateFireworks {
+    from {
+        background-position: 0 0; /* 배경 위치 초기 값 설정 */
+    }
+    to {
+        background-position: 100% 100%; /* 배경 위치 최종 값 설정 */
+    }
+}
+
+.container {
+    position: relative; /* 상대적인 위치 설정 */
+    width: 450px; /* 너비를 고정값인 450px로 설정 */
+    min-height: 400px; /* 최소 높이를 400px로 설정 */
+    background: rgba(0, 0, 0, 0.8); /* 배경 색상을 검은색에 투명도를 적용한 rgba 값으로 설정 */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 1); /* 그림자 효과 설정 */
+    opacity: 0; /* 초기에 투명하게 설정 */
+    transform: translateY(-100%); /* 초기에 상단으로 이동한 상태로 설정 */
+    animation: slideIn 1s ease-out forwards; /* 슬라이드 애니메이션 적용 */
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1; /* 애니메이션 종료 시 투명도를 1로 설정하여 나타나게 함 */
+        transform: translateY(0); /* 애니메이션 종료 시 수직 이동을 0으로 설정하여 원래 위치로 이동 */
+    }
+}
+
+.container:before {
+    content: ''; /* 가상 요소를 생성 */
+    position: absolute; /* 절대적인 위치 설정 */
+    top: 0; /* 위에서부터 0px의 위치에 설정 */
+    left: 0; /* 왼쪽에서부터 0px의 위치에 설정 */
+    width: 50%; /* 가로 길이를 부모 요소의 50%로 설정하여 왼쪽 절반을 차지 */
+    height: 100%; /* 세로 길이를 부모 요소의 100%로 설정하여 전체를 차지 */
+    background: rgba(255, 255, 255, 0.1); /* 배경 색상을 흰색에 투명도를 적용한 rgba 값으로 설정 */
+    pointer-events: none; /* 마우스 이벤트를 무시하도록 설정 */
+}
+
+.container:after {
+    content: ''; /* 가상 요소를 생성 */
+    position: absolute; /* 절대적인 위치 설정 */
+    top: -5px; /* 위에서부터 -5px의 위치에 설정하여 상단에 약간의 여백을 주고자 함 */
+    left: -5px; /* 왼쪽에서부터 -5px의 위치에 설정하여 좌측에 약간의 여백을 주고자 함 */
+    right: -5px; /* 오른쪽에서부터 -5px의 위치에 설정하여 우측에 약간의 여백을 주고자 함 */
+    bottom: -5px; /* 아래에서부터 -5px의 위치에 설정하여 하단에 약간의 여백을 주고자 함 */
+    background: linear-gradient(45deg, #ff0047, #6eff00); /* 45도 각도로 그라데이션 배경 설정 */
+    pointer-events: none; /* 마우스 이벤트를 무시하도록 설정 */
+    animation: animate 10s linear infinite; /* 애니메이션 적용 */
+}
+
+@keyframes animate {
+    0% {
+        filter: blur(60px) hue-rotate(0deg); /* 0% 지점에서 흐림 효과와 색상 회전 효과 적용 */
+    }
+
+    100% {
+        filter: blur(60px) hue-rotate(360deg); /* 100% 지점에서 흐림 효과와 색상 회전 효과 적용 */
+    }
+}
+
+.logo {
+    position: absolute; /* 절대적인 위치 설정 */
+    top: 20px; /* 위에서부터 20px의 위치에 설정하여 상단 여백을 주고자 함 */
+    left: 50%; /* 가로 중앙에 위치하도록 왼쪽에서 50%의 위치에 설정 */
+    transform: translateX(-50%); /* 가로 방향으로 -50%만큼 이동하여 중앙 정렬 */
+    animation: logoAnimation 3s infinite; /* 로고 애니메이션 적용 */
+    color: #fff; /* 글자 색상을 흰색(#fff)으로 설정 */
+    font-size: 32px; /* 글자 크기를 32px로 설정 */
+    font-weight: bold; /* 글꼴 굵기를 볼드로 설정 */
+}
+
+@keyframes logoAnimation {
+    0%, 100% {
+        transform: translateX(-50%) scale(1); /* 0%와 100% 지점에서 크기를 1로 설정하여 원래 크기로 유지 */
+    }
+
+    50% {
+        transform: translateX(-50%) scale(1.2); /* 50% 지점에서 크기를 1.2로 설정하여 확대 */
+    }
+}
+
+.form {
+    position: absolute; /* 절대적인 위치 설정 */
+    width: 100%; /* 너비를 부모 요소의 100%로 설정 */
+    height: 100%; /* 높이를 부모 요소의 100%로 설정 */
+    padding: 40px; /* 내부 여백을 40px로 설정 */
+    box-sizing: border-box; /* 요소의 크기 계산에 패딩과 테두리를 포함하도록 설정 */
+    z-index: 1; /* z-index 속성을 사용하여 요소를 다른 요소 위에 배치 */
+    display: flex; /* 플렉스 박스로 설정하여 내부 요소를 수직으로 정렬 */
+    flex-direction: column; /* 수직으로 정렬하기 위해 열 방향으로 설정 */
+    justify-content: center; /* 수직 가운데 정렬 */
+    align-items: center; /* 수평 가운데 정렬 */
+}
+
+.form h2 {
+    margin: 0; /* 바깥 여백을 0으로 설정 */
+    padding: 0; /* 안쪽 여백을 0으로 설정 */
+    color: #fff; /* 글자 색상을 흰색(#fff)으로 설정 */
+    font-size: 24px; /* 글자 크기를 24px로 설정 */
+}
+
+.form .inputBox {
+    width: 100%; /* 너비를 부모 요소의 100%로 설정 */
+    margin-top: 20px; /* 위쪽 여백을 20px로 설정 */
+    display: flex; /* 플렉스 박스로 설정하여 내부 요소를 수직으로 정렬 */
+    flex-direction: column; /* 수직으로 정렬하기 위해 열 방향으로 설정 */
+    align-items: center; /* 수평 가운데 정렬 */
+}
+
+.form .inputBox input {
+    width: 100%; /* 너비를 부모 요소의 100%로 설정 */
+    background: transparent; /* 배경을 투명으로 설정 */
+    border: none; /* 테두리 없음 */
+    border-bottom: 2px solid #fff; /* 하단 테두리를 흰색(#fff)으로 설정 */
+    outline: none; /* 포커스 효과 제거 */
+    font-size: 18px; /* 글자 크기를 18px로 설정 */
+    color: #fff; /* 글자 색상을 흰색(#fff)으로 설정 */
+    padding: 5px 0; /* 상하 여백을 5px로 설정 */
+    font-family: consolas; /* 글꼴을 Consolas로 설정 */
+}
+
+.form .inputBox .error-message {
+    font-size: 16px; /* 글자 크기를 16px로 설정 */
+    color: #ff4d4d; /* 글자 색상을 빨간색(#ff4d4d)으로 설정 */
+    margin-top: 10px; /* 위쪽 여백을 10px로 설정 */
+    text-align: center; /* 가운데 정렬 */
+    display: flex; /* 플렉스 박스로 설정하여 내부 요소를 수평으로 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
+.form .inputBox .error-message::before,
+.form .inputBox .error-message::after {
+    content: ''; /* 가상 요소를 생성 */
+    display: inline-block; /* 인라인 블록 요소로 설정 */
+    width: 20px; /* 가로 길이를 20px로 설정 */
+    height: 2px; /* 세로 길이를 2px로 설정 */
+    background: #ff4d4d; /* 배경 색상을 빨간색(#ff4d4d)으로 설정 */
+    margin: 0 10px; /* 좌우 여백을 0과 10px로 설정 */
+}
+
+.form .inputBox .error-message::before {
+    transform: rotate(45deg); /* 45도 회전 변형 적용 */
+}
+
+.form .inputBox .error-message::after {
+    transform: rotate(-45deg); /* -45도 회전 변형 적용 */
+}
+
+::placeholder {
+    color: #eee; /* 플레이스홀더 색상을 연한 회색(#eee)으로 설정 */
+}
+
+.form .inputBox input[type="submit"],
+.form .inputBox a
+.signupButton, .check {
+    background: #fff; /* 배경 색상을 흰색(#fff)으로 설정 */
+    color: #000; /* 글자 색상을 검은색(#000)으로 설정 */
+    border: none; /* 테두리 없음 */
+    font-weight: 900; /* 글꼴 굵기를 900으로 설정 */
+    max-width: 100px; /* 최대 너비를 100px로 설정 */
+    cursor: pointer; /* 커서를 포인터로 변경 */
+    transition: background 0.3s ease-out; /* 배경 색상 변화에 0.3초 동안 이징 효과 적용 */
+    text-decoration: none; /* 텍스트에 밑줄 없음 설정 */
+    display: inline-block; /* 인라인 블록 요소로 설정 */
+    padding: 10px 10px; /* 내부 여백을 10px로 설정 */
+    text-align: center; /* 가운데 정렬 */
+    margin-top: 10px; /* 위쪽 여백을 10px로 설정 */
+}
+
+.form .inputBox input[type="submit"]:hover,
+.form .inputBox a:hover
+.signupButton, .check:hover {
+    background: linear-gradient(to right, #ff5f6d, #ffc371); /* 오른쪽으로 그라데이션 배경 설정 */
+}
+
+.form p {
+    color: #eee; /* 글자 색상을 연한 회색(#eee)으로 설정 */
+    margin-top: 20px; /* 위쪽 여백을 20px로 설정 */
+}
+
+.form p a {
+    color: #fff; /* 글자 색상을 흰색(#fff)으로 설정 */
+    text-decoration: none; /* 텍스트에 밑줄 없음 설정 */
+}
+
+/* 오류 메시지 설정 */
+.form .inputBox .error-message {
+    font-size: 16px; /* 글자 크기 16px로 설정 */
+    color: #ff4d4d; /* 글자색 빨간색으로 설정 */
+    margin-top: 10px; /* 위쪽 여백 10px로 설정 */
+    text-align: center; /* 가운데 정렬 */
+    display: flex; /* 유연한 박스 모델로 설정 */
+    align-items: center; /* 가로 중앙 정렬 */
+}
+
+  /* 적절한 위치에 추가하세요. */
+  .swal2-popup {
+    font-size: 16px; /* 원하는 폰트 크기로 조절하세요. */
+  }
+
+  .swal2-title {
+    font-size: 20px; /* 원하는 타이틀 폰트 크기로 조절하세요. */
+  }
+
+  .swal2-content {
+    font-size: 16px; /* 원하는 내용 폰트 크기로 조절하세요. */
+  }

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head th:replace="~{layout/fragments :: myhead}"></head>
+
+<body>
+<header th:replace="layout/fragments :: myheader"></header>
+<nav th:replace="layout/fragments :: mysidebar"></nav>
+
+<section class="home">
+
+<div class="container mt-5 p-5" th:if="${#authentication.name == 'anonymousUser'}">
+    <h1 class="fw-bold text-white">로그인이 필요합니다</h1>
+    <p class="text-white">로그인을 하시면 생방송 중인 채널을 확인할 수 있습니다.</p>
+</div>
+
+
+
+<div class="container mt-5 p-5" th:unless="${#authentication.name == 'anonymousUser'}">    
+  
+    <h1 class="fw-bold text-white text-start">생방송 중인 채널</h1>
+    <hr class="text-white">
+    
+    <th:block th:if="${data.followList.size() eq 0}">
+        <h3 class="my-3 text-white">팔로우 한 채널이 없습니다.</h3>
+    </th:block>
+    
+    <!-- 생방송 중인 채널 -->
+    <div class="row my-5 custom">
+        <th:block th:each="followList, iterStat : ${data.followList}">
+            <div class="col-md-4 mb-4" th:if="${data.channelList[iterStat.index].streamingStateSet.toString().contains('ON')}">
+                <div class="card border-dark">
+                    <a class="video-card-thumbnail position-relative" th:href="@{/channel/{nickname}(nickname=${data.channelList[iterStat.index].channelUserAccountEntity.userNickname})}">
+                        <img src="https://livecloud-thumb.akamaized.net/chzzk/livecloud/KR/stream/26760407/live/4249524/record/24711646/thumbnail/image_480.jpg" class="card-img-top rounded-3" alt="Video Thumbnail">
+                        <div class="live-badge-container position-absolute top-0 start-0 mt-3 ms-3">
+                            <span class="badge bg-danger">LIVE</span>
+                            <span class="badge bg-secondary ms-1" th:text="${data.channelList[iterStat.index].channelViewerCount + ' 명'}"></span>
+                        </div>
+                    </a>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div class="video-card-profile mb-2">
+                            <a class="video-card-image" th:href="@{/channel/{nickname}(nickname=${data.channelList[iterStat.index].channelUserAccountEntity.userNickname})}">
+                                <img th:src="${data.channelList[iterStat.index].channelProfileImg}" alt="channelProfileImg" class="rounded-circle" style="width: 40px; height: 40px;">
+                            </a>
+                        </div>
+                        <div class="video-card-area mb-2">
+                            <a class="video-card-title text-decoration-none" th:href="@{/channel/{nickname}(nickname=${data.channelList[iterStat.index].channelUserAccountEntity.userNickname})}">
+                                <span class="video-title" style="text-decoration: none; color: black; font-weight: bold;" th:text="${data.channelList[iterStat.index].channelTitle}"></span>
+                            </a>
+                            <div class="video-card-name">
+                                <a class="video-card-channel text-decoration-none" th:href="@{/channel/{nickname}(nickname=${data.channelList[iterStat.index].channelUserAccountEntity.userNickname})}">
+                                    <span class="name-ellipsis">
+                                        <span class="name-text" style="text-decoration: none; color: black; font-weight: bold;" th:text="${data.channelList[iterStat.index].channelUserAccountEntity.userNickname}"></span>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="video-card-information mt-2" th:if="${data.channelList[iterStat.index].categoryEntityOfChannel != null}">
+                            <a class="video-card-item text-decoration-none" th:href="@{/categories/{categoryId}(categoryId=${data.channelList[iterStat.index].categoryEntityOfChannel.categoryId})}">
+                                <span class="badge bg-secondary" th:text="${data.channelList[iterStat.index].categoryEntityOfChannel.categoryName}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+    </div>
+    
+    <h1 class="fw-bold text-white text-start">팔로우 중인 채널</h1>
+    <hr class="text-white">
+    <!-- 생방송 중이 아닌 채널 -->
+    <th:block th:if="${data.followList.size() eq 0}">
+        <h3 class="my-3 text-white">팔로우 한 대상이 없습니다.</h3>
+    </th:block>
+    <div class="row mt-5 custom">
+        <th:block th:each="followList, iterStat : ${data.followList}">
+            <div class="col-md-4 mb-4" th:if="${not data.channelList[iterStat.index].streamingStateSet.toString().contains('ON')}">
+                <a th:href="@{/channel/{userId}(userId=${data.channelList[iterStat.index].channelUserAccountEntity.userNickname})}" class="text-decoration-none text-dark">
+                    <div class="card mb-3 text-center mt-4 mb-4 bg-dark text-white">
+                        <div class="d-flex justify-content-center align-items-center mt-4" style="height: 100px;">
+                            <img th:src="${data.channelList[iterStat.index].channelProfileImg}" alt="channelProfileImg" class="img-fluid rounded-circle" style="width: 100px; height: 100px;">
+                        </div>
+                        <div class="card-body mb-5">
+                            <h5 class="card-title mb-0" th:text=${followList.followingUserAccount.userNickname}></h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </th:block>
+    </div>
+
+</div>
+
+<footer th:replace="layout/fragments :: myfooter"></footer>
+</section>
+
+<!-- 방송하기/방송종료 -->
+<div th:replace="layout/fragments :: myModal"></div>
+<script src="/js/broadcast.js"></script>
+
+<script th:replace="~{layout/fragments :: bootstrap_js}"></script>
+<script th:replace="~{layout/fragments :: sidebar_js}"></script>
+<script src="/js/fragments-categories-search.js"></script>
+</body>
+
+</html>

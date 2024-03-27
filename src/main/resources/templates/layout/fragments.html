@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head th:fragment="myhead">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Beep</title>
+    <style>
+        /* 비디오 카드를 위한 임시 스타일 추후 삭제 예상*/
+        .custom .row-cols-md-4 {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+        }
+
+        .custom .card {
+            height: 300px;
+            border: 1px solid #343a40;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .custom .card:hover {
+            transform: scale(1.05);
+        }
+
+        .custom .video-card-thumbnail {
+            position: relative;
+            overflow: hidden;
+            height: 60%;
+        }
+
+        .custom .video-card-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .custom .live-badge-container {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 1rem;
+            start: 1rem;
+        }
+
+        .custom .badge {
+            margin-right: 0.5rem;
+        }
+
+        .custom .video-card-profile {
+            margin-top: 1rem;
+        }
+
+        .custom .video-card-profile img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
+
+        .custom .video-card-area,
+        .custom .video-card-information {
+            margin-top: auto;
+        }
+
+        .custom .video-card-title {
+            color: black;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .custom .video-card-name {
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+
+        .custom .video-card-item {
+            text-decoration: none;
+        }
+        
+
+        .modal {
+            display: none;
+            position:absolute;
+            justify-content: center;
+            z-index: 1;
+            left: 0;
+            top: 50%;
+            width:400px;  
+            height:600px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            margin: 35% auto;
+        }
+        .modal-body {
+            padding: 0px;
+        }
+
+    </style>
+    <link rel="stylesheet" href="/css/sidebar.css" >
+    <link rel="stylesheet" href="/css/nav.css" >
+    <link rel="stylesheet" href="/css/banner.css" >
+    <link rel="stylesheet" href="/css/categorysearch.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/1306328925.js" crossorigin="anonymous"></script>
+</head>
+
+
+
+<body>
+
+
+
+<div th:fragment="myModal" id="myModal" class="modal" tabindex="-1" role="dialog" sec:authorize="isAuthenticated()">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" role="document">
+            <div class="modal-header">
+                <h3 class="modal-title">방송설정</h3>
+            </div>
+            <div class="modal-body" style="padding: 0px 16px;">
+                <form th:action="@{/streaming/on}" method="post">
+                    <label for="title">방송 제목:</label>
+                    <textarea class="form-control" id="title" name="title" required th:value="${channel != null ? channel.channelTitle : ''}"></textarea><br>
+
+                    <label for="description">설명:</label>
+                    <textarea class="form-control" id="description" name="content" required th:value="${channel != null ? channel.channelContent : ''}"></textarea><br>
+                    
+                    <label for="categoryEntity">카테고리:</label>
+                    <!-- 카테고리 검색 입력란 -->
+                    <input type="text" id="categoryInput" placeholder="Just chatting">                    
+                    <!-- 검색된 카테고리 목록을 표시할 div -->
+                    <div id="categoryList"></div>
+                    <input type="hidden" name="categoryId" id="categoryId" value=""> <!-- 숨겨진 입력 필드 -->
+                    <input type="text" name="channelId" class="d-none" th:value="${channel != null ? channel.channelId : ''}">
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary">방송시작</button>
+                        <button id="cancelBtn"type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<header th:fragment="myheader">
+    <nav class="navbar navbar-expand-lg bg-dark fixed-top">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand" href="/"> <img
+                        src="/images/beep-logo-white.png"
+                        alt="" width="50" height="40"
+                        class="d-inline-block align-text-top"></a> 
+                <a class="nav-link text-white me-3 " href="/follow/list">팔로잉</a> 
+                <a class="nav-link text-white " href="/categories">탐색</a>
+            </div>
+            <button class="navbar-toggler bg-secondary" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <form class="d-flex my-2 my-lg-0 ms-auto align-items-center" action="/search" method="post">
+                    <!-- align-items-center 추가 -->
+                    <input class="form-control search me-2 mb-2 mb-lg-0" type="search" name="keyword"
+                           placeholder="스트리머, 게임, 영상 검색" aria-label="Search" required>
+                    <button class="btn btn-outline-success" type="submit">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="0.9">
+                                <path d="M15.8999 14.5L19.0862 17.7187"
+                                      stroke="white" stroke-width="1.8" stroke-linecap="round"
+                                      stroke-linejoin="round"></path>
+                                <circle cx="11.4302" cy="10.4819"
+                                        r="5.35" stroke="white" stroke-width="1.8"></circle>
+                            </g>
+                        </svg>
+                        <span class="blind">검색</span>
+                    </button>
+                </form>
+                <ul class="navbar-nav ms-auto text-white">
+                    <!-- 로그인 버튼 -->
+                    <li class="nav-item" sec:authorize="isAnonymous()"><a
+                            class="btn mx-2 custom-btn-gray" th:href="@{/user/login}"
+                            role="button">로그인</a></li>
+
+                    <!-- 회원가입 버튼 -->
+                    <li class="nav-item" sec:authorize="isAnonymous()"><a
+                            class="btn mx-2 custom-btn-purple" th:href="@{/user/signup}"
+                            role="button">회원가입</a></li>
+
+                        <!-- 방송하기 버튼 -->
+                        
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <th:block th:if="${status == '[OFF]'}">
+                                    <button id = "broadcastOn" type="submit" class="btn mx-2 custom-btn-purple">방송하기</button>
+                            </th:block>
+                            
+                            <th:block th:if="${status == '[ON]'}">
+                                <form th:action="@{/streaming/off}" method="post"
+                                    style="margin-bottom: 0px;">
+                                    <input type="text" th:name="${userAccount.userName}" class="d-none"
+                                        th:value="${userAccount.userName}">
+                                    <button type="submit" class="btn mx-2 custom-btn-purple">방송종료</button>
+                                </form>
+                            </th:block>
+                        </li>
+
+                    <!-- 로그아웃 버튼 -->
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="btn mx-2 custom-btn-gray" th:href="@{/logout}">
+                            <!-- userAccount가 null이 아닐 때만 userNickname을 표시합니다. -->
+                            <span th:if="${userAccount != null}" th:text="${userAccount.userNickname}">사용자</span> 로그아웃
+                        </a>
+                    </li>
+
+                    <!-- 드롭다운 메뉴 -->
+                    <li class="nav-item dropdown">
+                        <button class="btn dropdown-toggle me-3 profile-button"
+                                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg class="profile-icon" width="20" height="20"
+                                     viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                            d="M5 7a5 5 0 1 1 6.192 4.857A2 2 0 0 0 13 13h1a3 3 0 0 1 3 3v2h-2v-2a1 1 0 0 0-1-1h-1a3.99 3.99 0 0 1-3-1.354A3.99 3.99 0 0 1 7 15H6a1 1 0 0 0-1 1v2H3v-2a3 3 0 0 1 3-3h1a2 2 0 0 0 1.808-1.143A5.002 5.002 0 0 1 5 7zm5 3a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"
+                                            clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <!-- 드롭다운 메뉴 항목 추가 -->
+                            <li>
+                                <div class="container mt-2">
+                                    <div class="dark-theme-toggle d-flex align-items-center">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox"
+                                                         id="darkThemeToggle" checked> <label
+                                                class="form-check-label fw-bold" for="darkThemeToggle">Dark</label>
+                                            <svg width="20" height="20" version="1.1"
+                                                     viewBox="0 0 20 20" x="0px" y="0px"
+                                                     class="ScIconSVG-sc-1q25cff-1 jpczqG ms-2">
+                                                <g>
+                                                    <path fill-rule="evenodd"
+                                                                d="M8.614 2.134a8.001 8.001 0 001.388 15.879 8.003 8.003 0 007.884-6.635 6.947 6.947 0 01-2.884.62 7.004 7.004 0 01-6.388-9.864zM6.017 5.529a5.989 5.989 0 00-2.015 4.484c0 3.311 2.69 6 6 6a5.99 5.99 0 004.495-2.028 9.006 9.006 0 01-8.48-8.456z"
+                                                                clip-rule="evenodd"></path>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li sec:authorize="isAuthenticated()">
+                                <a class="dropdown-item" th:href="@{/settings/profile}">
+                                    <i class="fas fa-tachometer-alt me-2"></i> 설정
+                                </a>
+                            </li>
+                            <li sec:authorize="isAuthenticated()"><a
+                                    class="dropdown-item" th:href="@{/logout}"> <i
+                                    class="fas fa-sign-out-alt me-2"></i> <span
+                                    th:text="${userAccount.userNickname}"></span> 로그아웃
+                            </a></li>
+                            <li sec:authorize="!isAuthenticated()"><a
+                                    class="dropdown-item" th:href="@{/user/login}"> <i
+                                    class="fas fa-sign-in-alt me-2"></i> <span class="fw-bold">로그인</span>
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+</header>
+
+<nav th:fragment="mysidebar" class="sidebar">
+    <header>
+    <!-- 
+        <div class="image-text">
+            <a href="/">
+                <span class="image">
+                <img src="https://getbootstrap.kr/docs/5.1/assets/brand/bootstrap-logo.svg"
+                         alt="Logo">
+                        </span>
+            </a>
+            <div class="text header-text">
+                <span class="name">Spring Boot</span>
+                <span class="profession">Streaming Site</span>
+            </div>
+        </div>
+     -->
+
+        <i class='my-4 bx bx-chevron-right toggle'></i>
+    </header>
+    
+
+    <div class="menu-bar">
+        <div class="menu">
+        
+<div class="my-1" id="followList"></div>
+<div class="my-1" id="popularList"></div>
+<script th:inline="javascript">
+  const authentication = /*[[${#authentication.name}]]*/ null;
+</script>
+<script src="/js/fragments-channellist.js"></script>
+            
+            <!-- 
+            <ul class="menu-links">
+                <li class="nav-link">
+                    <a href="/">
+                        <i class='bx bxs-home-heart icon'></i>
+                        <span class="text nav-text">Home</span>
+                    </a>
+                </li>
+                <li class="nav-link" id="followerLink">
+                    <a href="/follow/list">
+                        <i class='bx bx-user-plus icon'></i>
+                        <span class="text nav-text">Follower</span>
+                    </a>                    
+                </li>                
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bxl-youtube icon'></i>
+                        <span class="text nav-text">Rec Channels</span>
+                    </a>
+                </li>
+                <li class="nav-link">
+                    <a href="/categories">
+                        <i class='bx bxs-group icon'></i>
+                        <span class="text nav-text">Category</span>
+                    </a>
+                </li>
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bxs-video icon'></i>
+                        <span class="text nav-text">Live</span>
+                    </a>
+                </li>
+
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bx-broadcast icon'></i>
+                        <span class="text nav-text">Broadcast</span>
+                    </a>
+                </li>
+
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bx-book-reader icon'></i>
+                        <span class="text nav-text">Blog</span>
+                    </a>
+                </li>
+
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bx-cog icon'></i>
+                        <span class="text nav-text">Setting</span>
+                    </a>
+                </li>
+            </ul>
+             -->
+            
+
+
+        </div>
+
+        <div class="bottom-content">
+            <!-- 로그인 전 -->
+            <li class="mode" sec:authorize="isAnonymous()">
+                <a th:href="@{/user/login}">
+                    <i class='bx bx-log-in icon'></i>
+                    <span class="text nav-text" style="margin-left: 60px;">Login</span>
+                </a>
+            </li>
+
+            <!-- 로그인 후 -->
+            <li class="mode" sec:authorize="isAuthenticated()">
+                <a th:href="@{/logout}">
+                    <i class='bx bx-log-out icon'></i>
+                    <span class="text nav-text" style="margin-left: 60px;">Logout</span>
+                </a>
+            </li>
+            <li class="mode">
+                <div class="moon-sun">
+                    <i class='bx bx-moon icon moon'></i>
+                    <i class='bx bx-sun icon sun'></i>
+                </div>
+                <span class="mode-text text">Dark Mode</span>
+
+                <div class="toggle-switch">
+                    <span class="switch"></span>
+                </div>
+
+            </li>
+
+        </div>
+
+    </div>
+
+
+</nav>
+
+<section th:fragment="myhome" class="home">
+    <div class="custom-top-banner-container">
+        <!-- 첫 번째 배너 아이템 -->
+        <div class="custom-top-banner-item">
+            <a href="https://game.naver.com/lounge/chzzk/board/detail/3507291" target="_blank">
+                <img src="https://nng-phinf.pstatic.net/MjAyNDAxMzBfMTEz/MDAxNzA2NTgxODc0NTY3.74zYyIuqnWPlqrA5M-u0bKNni40lVcilshli9aTVtosg.5Wr9T68vqENjBTryAUf0XNTY0HegN40g7mZHvZWkUpQg.PNG/%EB%B2%A0%ED%83%80%EC%95%88%EB%82%B4_%ED%99%88%EC%83%81%EB%8B%A8%EC%9D%B4%EB%AF%B8%EC%A7%80.png" alt="Banner 1">
+            </a>
+            <div class="custom-top-banner-text-area">
+                <div class="custom-top-banner-title">2월 19일부터 누구나 방송 가능!</div>
+                <div class="custom-top-banner-description">권한 신청없이 방송이 가능해집니다.</div>
+                <div class="custom-top-banner-date">자세한 내용 보기</div>
+            </div>
+        </div>
+
+        <!-- 두 번째 배너 아이템 -->
+        <div class="custom-top-banner-item">
+            <a href="https://game.naver.com/lounge/chzzk/board/detail/3404036" target="_blank">
+                <img src="https://nng-phinf.pstatic.net/MjAyNDAxMThfMTA4/MDAxNzA1NTY2NDQ2NjYw.e5iP0LkHl17B6ytliH_vpkzFnGHpOumhhPvm-wb5QQUg.z4KHau_ltx5dHJhCvJYaNmFSlu0Ber1kD0uhVUO-P14g.PNG/%ED%8A%B8%EC%9C%84%EC%B9%98_%EA%B5%AC%EB%8F%85%EA%B8%B0%EA%B0%84_%EC%9D%B4%EC%96%B4%EA%B0%80%EA%B8%B0_%EC%9D%B4%EB%AF%B8%EC%A7%80.png" alt="Banner 2">
+            </a>
+            <div class="custom-top-banner-text-area">
+                <div class="custom-top-banner-title">트위치 구독기간 이어가기</div>
+                <div class="custom-top-banner-description">바로 신청하세요!</div>
+                <div class="custom-top-banner-date">안내 공지 확인하기</div>
+            </div>
+        </div>
+
+        <!-- 세 번째 배너 아이템 -->
+        <div class="custom-top-banner-item">
+            <a href="https://game.naver.com/lounge/chzzk/board/detail/3335193" target="_blank">
+                <img src="https://nng-phinf.pstatic.net/MjAyMzEyMjVfMTk0/MDAxNzAzNTEwMTU0Mjc0.mXiYWLy3xzVeRi1TFTIAE5ju6HYoQr9YxIImLd78MUsg.jVnoFglJJ_2Am6XD9DoMEcIg7l0_INvEezgDTeBF7rEg.PNG/%EC%8A%A4%ED%8A%B8%EB%A6%AC%EB%A8%B8%EB%AA%A8%EC%A7%91_%ED%99%88%EC%83%81%EB%8B%A8%EC%9D%B4%EB%AF%B8%EC%A7%80.png" alt="Banner 3">
+            </a>
+            <div class="custom-top-banner-text-area">
+                <div class="custom-top-banner-title">프로 등급도 동시 송출 가능</div>
+                <div class="custom-top-banner-description">베타 테스트 기간 동안 적용됩니다</div>
+                <div class="custom-top-banner-date">안내 공지 확인하기</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 임시 캐러셀 추가 -->
+    <section class="mt-5 mb-5 position-relative" style="margin-top: 5rem; margin-bottom: 5rem;">
+        <div id="twitchCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" style="max-width: 1100px; margin: 0 auto; height: 370px; overflow: hidden;">
+            <div class="carousel-inner">
+                <!-- 첫 번째 슬라이드 -->
+                <div class="carousel-item active position-relative">
+                    <div class="position-absolute top-0 start-0 text-white bg-danger p-2">LIVE</div>
+                    <a class="ScCoreLink-sc-16kq0mq-0 eFqEFL tw-link" href="/live/your-first-channel-id" target="_self">
+                        <img alt="Twitch Stream" class="InjectLayout-sc-1i43xsx-0 bbhkug tw-image img-fluid" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_sigwon-1200x675.jpg">
+                    </a>
+                    <div class="CoreText-sc-1txzju1-0 jkurzn InjectLayout-sc-1i43xsx-0 carousel-metadata--top-text fmrktE" title="Your First Channel Name">테스트 1번째</div>
+                </div>
+                <!-- 두 번째 슬라이드 -->
+                <div class="carousel-item position-relative">
+                    <div class="position-absolute top-0 start-0 text-white bg-danger p-2">LIVE</div>
+                    <a class="ScCoreLink-sc-16kq0mq-0 eFqEFL tw-link" href="/live/second-channel-id" target="_self">
+                        <img alt="Twitch Stream" class="InjectLayout-sc-1i43xsx-0 bbhkug tw-image img-fluid" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_so_you7-1200x675.jpg">
+                    </a>
+                    <div class="CoreText-sc-1txzju1-0 jkurzn InjectLayout-sc-1i43xsx-0 carousel-metadata--top-text fmrktE" title="Second Channel Name">테스트 2번째</div>
+                </div>
+                <!-- 세 번째 슬라이드 -->
+                <div class="carousel-item position-relative">
+                    <div class="position-absolute top-0 start-0 text-white bg-danger p-2">LIVE</div>
+                    <a class="ScCoreLink-sc-16kq0mq-0 eFqEFL tw-link" href="/live/second-channel-id" target="_self">
+                        <img alt="Twitch Stream" class="InjectLayout-sc-1i43xsx-0 bbhkug tw-image img-fluid" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_rlgus1006-1200x675.jpg">
+                    </a>
+                    <div class="CoreText-sc-1txzju1-0 jkurzn InjectLayout-sc-1i43xsx-0 carousel-metadata--top-text fmrktE" title="Second Channel Name">테스트 3번째</div>
+                </div>
+                <!-- 네 번째 슬라이드 -->
+                <div class="carousel-item position-relative">
+                    <div class="position-absolute top-0 start-0 text-white bg-danger p-2">LIVE</div>
+                    <a class="ScCoreLink-sc-16kq0mq-0 eFqEFL tw-link" href="/live/second-channel-id" target="_self">
+                        <img alt="Twitch Stream" class="InjectLayout-sc-1i43xsx-0 bbhkug tw-image img-fluid" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_silsil03111-1200x675.jpg">
+                    </a>
+                    <div class="CoreText-sc-1txzju1-0 jkurzn InjectLayout-sc-1i43xsx-0 carousel-metadata--top-text fmrktE" title="Second Channel Name">테스트 4번째</div>
+                </div>
+                <!-- 다섯 번째 슬라이드 -->
+                <div class="carousel-item position-relative">
+                    <div class="position-absolute top-0 start-0 text-white bg-danger p-2">LIVE</div>
+                    <a class="ScCoreLink-sc-16kq0mq-0 eFqEFL tw-link" href="/live/second-channel-id" target="_self">
+                        <img alt="Twitch Stream" class="InjectLayout-sc-1i43xsx-0 bbhkug tw-image img-fluid" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_llilka-1200x675.jpg">
+                    </a>
+                    <div class="CoreText-sc-1txzju1-0 jkurzn InjectLayout-sc-1i43xsx-0 carousel-metadata--top-text fmrktE" title="Second Channel Name">테스트 5번째</div>
+                </div>
+                <!-- 여섯 번째 슬라이드 -->
+                <div class="carousel-item position-relative">
+                    <div class="position-absolute top-0 start-0 text-white bg-danger p-2">LIVE</div>
+                    <a class="ScCoreLink-sc-16kq0mq-0 eFqEFL tw-link" href="/live/second-channel-id" target="_self">
+                        <img alt="Twitch Stream" class="InjectLayout-sc-1i43xsx-0 bbhkug tw-image img-fluid" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_dda_ju-1200x675.jpg">
+                    </a>
+                    <div class="CoreText-sc-1txzju1-0 jkurzn InjectLayout-sc-1i43xsx-0 carousel-metadata--top-text fmrktE" title="Second Channel Name">테스트 6번째</div>
+                </div>
+                <!-- 일곱 번째 슬라이드 -->
+                <div class="carousel-item position-relative">
+                    <div class="position-absolute top-0 start-0 text-white bg-danger p-2">LIVE</div>
+                    <a class="ScCoreLink-sc-16kq0mq-0 eFqEFL tw-link" href="/live/second-channel-id" target="_self">
+                        <img alt="Twitch Stream" class="InjectLayout-sc-1i43xsx-0 bbhkug tw-image img-fluid" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_kimdduddi-1200x675.jpg">
+                    </a>
+                    <div class="CoreText-sc-1txzju1-0 jkurzn InjectLayout-sc-1i43xsx-0 carousel-metadata--top-text fmrktE" title="Second Channel Name">테스트 7번째</div>
+                </div>
+                <!-- 여덟 번째 슬라이드 -->
+                <div class="carousel-item position-relative">
+                    <div class="position-absolute top-0 start-0 text-white bg-danger p-2">LIVE</div>
+                    <a class="ScCoreLink-sc-16kq0mq-0 eFqEFL tw-link" href="/live/second-channel-id" target="_self">
+                        <img alt="Twitch Stream" class="InjectLayout-sc-1i43xsx-0 bbhkug tw-image img-fluid" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_dda_ju-1200x675.jpg">
+                    </a>
+                    <div class="CoreText-sc-1txzju1-0 jkurzn InjectLayout-sc-1i43xsx-0 carousel-metadata--top-text fmrktE" title="Second Channel Name">테스트 8번째</div>
+                </div>
+            </div>
+
+            <!-- 인디케이터 -->
+            <div class="carousel-indicators mt-3">
+                <button type="button" data-bs-target="#twitchCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#twitchCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#twitchCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#twitchCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+                <button type="button" data-bs-target="#twitchCarousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
+                <button type="button" data-bs-target="#twitchCarousel" data-bs-slide-to="5" aria-label="Slide 6"></button>
+                <button type="button" data-bs-target="#twitchCarousel" data-bs-slide-to="6" aria-label="Slide 7"></button>
+                <button type="button" data-bs-target="#twitchCarousel" data-bs-slide-to="7" aria-label="Slide 8"></button>
+                <!-- (원하는 만큼 복사하여 추가) -->
+            </div>
+
+            <!-- 이전 버튼 -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#twitchCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+
+            <!-- 다음 버튼 -->
+            <button class="carousel-control-next" type="button" data-bs-target="#twitchCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </section>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <a href="https://game.naver.com/lounge/chzzk/board/detail/3421257" target="_blank">
+                    <img src="https://nng-phinf.pstatic.net/MjAyNDAxMjJfNDMg/MDAxNzA1OTIyMDk0MzU3.dMYNnkWP8HLOvgc21kOWQiOSYQiLrQGrEmIdRRXlTtsg.CSZex4sj6Su8f1nolOIeWgbIeSLbFPZIZ6gMWHOX-FMg.JPEG/A-1_PC_%ED%99%88%EB%B0%B0%EB%84%88_1500x240_%28140626%29.jpg"
+                             class="img-fluid" alt="배너">
+                </a>
+            </div>
+        </div>
+    </div>
+
+	<div class="custom-header">
+		<strong class="custom-title" style="color: #c9cedc;">추천</strong>
+		<a class="custom-link" th:href="@{/lives}">전체 보기</a>
+	</div>
+  
+    <div class="row row-cols-1 row-cols-md-4 g-4 mt-3 custom">
+        <!-- Thymeleaf의 반복문을 사용하여 동적으로 동영상 카드를 생성 -->
+        <div th:each="broadcast : ${channelList}" th:object="${broadcast}" class="col">
+            <!-- 더미 데이터를 사용하여 동영상 정보 표시 -->
+            <div class="card border-dark">
+                <a class="video-card-thumbnail position-relative" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                    <img src="https://livecloud-thumb.akamaized.net/chzzk/livecloud/KR/stream/26760407/live/4249524/record/24711646/thumbnail/image_480.jpg"  class="card-img-top rounded-3" alt="Video Thumbnail">
+                    <div class="live-badge-container position-absolute top-0 start-0 mt-3 ms-3">
+                        <span class="badge bg-danger">LIVE</span>
+                        <span class="badge bg-secondary ms-1" th:text="*{channelViewerCount + ' 명'}"></span>
+                    </div>
+                </a>
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div class="video-card-profile mb-2">
+                        <a class="video-card-image" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                            <img th:src="*{channelProfileImg}" alt="Streamer Image" class="rounded-circle" style="width: 40px; height: 40px;">
+                        </a>
+                    </div>
+                    <div class="video-card-area mb-2">
+                        <a class="video-card-title text-decoration-none" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                            <span class="video-title" style="text-decoration: none; color: black; font-weight: bold;" th:text="*{channelTitle}"></span>
+                        </a>
+                        <div class="video-card-name">
+                            <a class="video-card-channel text-decoration-none" th:href="@{/channel/{roomId}(roomId=*{channelUserAccountEntity.userNickname})}">
+                            <span class="name-ellipsis">
+                                <span class="name-text" style="text-decoration: none; color: black; font-weight: bold;" th:text="*{channelUserAccountEntity.userNickname}"></span>
+                            </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="video-card-information mt-2" th:if="*{categoryEntityOfChannel != null}">
+                        <a class="video-card-item text-decoration-none" th:href="@{/categories/{categoryId}(categoryId=*{categoryEntityOfChannel.categoryId})}">
+                            <span class="badge bg-secondary" th:text="*{categoryEntityOfChannel.categoryName}"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:fragment="myfooter"
+                    class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top" style="color: #18191a;">
+        <p class="col-md-4 mb-0" style="color: #ccc;">© 2024 Spring Boot ITWILL</p>
+
+        <a href="/"
+             class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+            <svg class="bi me-2" width="40" height="32">
+                <use xlink:href="#bootstrap"></use>
+            </svg>
+        </a>
+
+        <ul class="nav col-md-4 justify-content-end">
+            <li class="nav-item"><a href="#"
+                                                            class="nav-link px-2" style="color: #ccc;">Home</a></li>
+            <li class="nav-item"><a href="#"
+                                                            class="nav-link px-2" style="color: #ccc;">Features</a></li>
+            <li class="nav-item"><a href="#"
+                                                            class="nav-link px-2" style="color: #ccc;">Pricing</a></li>
+            <li class="nav-item"><a href="#"
+                                                            class="nav-link px-2 " style="color: #ccc;">FAQs</a></li>
+            <li class="nav-item"><a href="#"
+                                                            class="nav-link px-2" style="color: #ccc;">About</a></li>
+        </ul>
+    </footer>
+</section>
+
+
+<script th:fragment="bootstrap_js" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+<script th:fragment="sidebar_js" src="/js/sidebar.js"></script>
+
+
+</body>
+
+</html>

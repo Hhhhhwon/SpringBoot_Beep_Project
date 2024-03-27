@@ -1,0 +1,4 @@
+.settings-nav .active a {
+  color: #ff0000; /* 활성화된 링크의 색상을 빨간색으로 설정합니다. */
+  font-weight: bold; /* 글자를 굵게 만듭니다. */
+}

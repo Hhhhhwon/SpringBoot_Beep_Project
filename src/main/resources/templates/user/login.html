@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/css/login.css">
+    <script th:src="@{/js/findUsername.js}"></script>
+</head>
+
+<body>
+<div class="stars"></div>
+
+<div class="logo"><img style="height: 150px; width: 150px;" src="/images/beep-logo-white.png"></img></div>
+	
+	
+
+<div class="container">
+
+    <div class="form">
+        <h2>Login Form</h2>
+        <form method="post">
+            <div class="inputBox">
+                <input type="text" name="username" placeholder="Username" autofocus required />
+            </div>
+            <div class="inputBox">
+                <input type="password" name="password" placeholder="Password" required />
+            </div>
+            <div style="margin-bottom: 20px;" class="inputBox">
+                <input type="submit" value="Login" />
+                <a th:href="@{/user/signup}">Sign Up</a>
+            </div>
+			
+            <!-- '아이디 찾기' 링크는 아이디 찾기 페이지로 리디렉트합니다 -->
+
+                <!-- TODO: 비밀번호 찾기  -->
+           <div class="social">
+			    <a href="/oauth2/authorization/google" class="social-button google">
+			        <img src="/images/google.png" alt="Google Login">
+			    </a>
+			    <a href="#" id ="social" class="social-button kakao">
+			        <img src="/images/kakao.png" alt="Kakao Login">
+			    </a>
+			    <a href="#"  id ="social" class="social-button naver">
+			        <img src="/images/naver.png" alt="Naver Login">
+			    </a>
+			</div>
+            <div class="inputBox">
+                <div class="error-message" th:if="${param.error}">아이디와 비밀번호를 확인하세요.</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script th:replace="~{./layout/fragments :: bootstrap_js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // 모든 "social" ID 요소 선택
+    const socialButtons = document.querySelectorAll('a#social');
+
+    // forEach 루프 사용하여 각 요소에 이벤트 리스너 추가
+    socialButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault(); // 기본 동작 방지
+
+            // Swal2 팝업 실행
+            Swal.fire({
+                title: '만들고 있습니다..!',
+                text: '구글 로그인으로 이용 부탁드립니다..!',
+                icon: 'info',
+                allowOutsideClick: false, // 팝업 바깥 영역 클릭 시 닫히지 않도록 설정
+                showConfirmButton: false, // 확인 버튼 숨김
+            });
+
+            // 2초 후 팝업 자동 닫기
+            setTimeout(function() {
+                Swal.close();
+            }, 2000);
+        });
+    });
+</script>
+</body>
+
+</html>
